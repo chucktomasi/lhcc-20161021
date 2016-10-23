@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_66238_meta.Output</api_name>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>Output</name>
+        <script><![CDATA[var Output = Class.create();
+Output.prototype = {
+    initialize: function(event /* GlideRecord demo_data */) {
+		this.event = event;
+		this.counter = 0;
+    },
+
+	createEventObject : function() {
+		var obj = {};
+		
+		var monthName = ['Jan', 'Feb', 'Mar', 'Apr',
+						'May', 'Jun', 'Jul', 'Aug',
+						'Sep', 'Oct', 'Nov', 'Dec'];
+		obj.text = this.event.getValue('text');
+		var gdt = new GlideDateTime();
+		obj.date = {};
+		
+		obj.date.value = this.event.year;
+		var dayOfMonth = gdt.getDayOfMonthUTC();
+		var month = gdt.getMonthUTC();
+		var year = gdt.getYearUTC();
+		obj.date.fullText = monthName[month - 1] + ' ' +
+			dayOfMonth + ', ' + year;
+		obj.date.diff = year - this.event.getValue('year');
+		gs.debug('obj.text=' + obj.text + ' value=' + obj.date.value);
+
+		return obj;
+	},
+	
+	_getObjectValue : function(obj, str) {
+
+		this.counter++;
+		
+		if (this.counter > 5)
+			return 'TOO FAR!!!';
+		
+		if (typeof obj[str] == 'object') {
+			return '*** OBJECT ***';
+			
+		} else if (!obj[str]) {
+			var dotPos = str.indexOf('.');
+			if (dotPos >= 0) {
+				var obj1 = str.substr(0, dotPos);
+				var str1 = str.substr(dotPos+1);
+				
+				gs.debug('obj1=' + obj1 + ' str1=' + str1);
+				return this._getObjectValue(obj[obj1], str1);
+
+			} else {
+				return '*** UNDEFINED ***';
+
+			}
+		} else {
+			return obj[str];
+		}
+	},
+	
+    type: 'Output'
+};]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2016-10-21 20:50:22</sys_created_on>
+        <sys_customer_update>true</sys_customer_update>
+        <sys_id>b9668e62db2a22002e38711ebf961976</sys_id>
+        <sys_mod_count>11</sys_mod_count>
+        <sys_name>Output</sys_name>
+        <sys_package display_value="Meta" source="x_66238_meta">8f133b46db2222002e38711ebf96198a</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_replace_on_upgrade>false</sys_replace_on_upgrade>
+        <sys_scope display_value="Meta">8f133b46db2222002e38711ebf96198a</sys_scope>
+        <sys_update_name>sys_script_include_b9668e62db2a22002e38711ebf961976</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2016-10-21 21:34:18</sys_updated_on>
+    </sys_script_include>
+</record_update>
