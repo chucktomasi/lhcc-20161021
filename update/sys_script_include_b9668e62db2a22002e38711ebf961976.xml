@@ -31,17 +31,24 @@ Output.prototype = {
 		obj.date.fullText = monthName[month - 1] + ' ' +
 			dayOfMonth + ', ' + year;
 		obj.date.diff = year - this.event.getValue('year');
-		gs.debug('obj.text=' + obj.text + ' value=' + obj.date.value);
+		// gs.debug('obj.text=' + obj.text + ' value=' + obj.date.value);
+		
+		var yearText = obj.date.value.toString();
+		if (obj.date.value < 0)
+			yearText = Math.abs(obj.date.value) + ' BC';
+		obj.date.text = yearText;
+		
+		gs.debug('date.text=' + obj.date.text);
 
 		return obj;
 	},
 	
 	_getObjectValue : function(obj, str) {
 
-		this.counter++;
+//		this.counter++;
 		
-		if (this.counter > 5)
-			return 'TOO FAR!!!';
+// 		if (this.counter > 5)
+// 			return 'TOO FAR!!!';
 		
 		if (typeof obj[str] == 'object') {
 			return '*** OBJECT ***';
@@ -52,7 +59,7 @@ Output.prototype = {
 				var obj1 = str.substr(0, dotPos);
 				var str1 = str.substr(dotPos+1);
 				
-				gs.debug('obj1=' + obj1 + ' str1=' + str1);
+				// gs.debug('obj1=' + obj1 + ' str1=' + str1);
 				return this._getObjectValue(obj[obj1], str1);
 
 			} else {
@@ -63,6 +70,52 @@ Output.prototype = {
 			return obj[str];
 		}
 	},
+
+	_replaceMetaString : function(metaString, obj) {
+	
+		// Example: ${date.diff} years ago {$text}
+		var keyPattern = /\${.+?}/g;
+		var keys = metaString.match(keyPattern);
+		var answer = metaString;
+		
+		gs.debug('keys=' + keys);
+		
+		for (i = 0; i < keys.length; i++) {
+			// Turn ${date.text} in to date.text
+//			var key = keys[i].replace(/\${(.*)}/, "$1");
+			var key = keys[i].match(/\${(.*)}/)[1];
+			// Use date.text to get the object value
+			// gs.debug('key=' + key);
+			var keyVal = this._getObjectValue(obj, key);
+			answer = answer.replace(keys[i], keyVal);
+		}
+		
+		return answer;
+	},
+	
+	
+	_getRandomPattern : function() {
+	
+		var list = [];
+		var ga = new GlideRecord('x_66238_meta_pattern');
+		ga.query();
+		var count = ga.getRowCount();
+		
+		while (ga.next()) {
+			list.push(ga.getValue('pattern'));
+		}
+		
+		var random = 0;
+		
+		if (count >= 1) {
+			random = Math.floor(Math.random() * count);
+		}
+		
+		gs.debug('random=' + random);
+		
+		return list[random];
+		
+	},
 	
     type: 'Output'
 };]]></script>
@@ -71,7 +124,7 @@ Output.prototype = {
         <sys_created_on>2016-10-21 20:50:22</sys_created_on>
         <sys_customer_update>true</sys_customer_update>
         <sys_id>b9668e62db2a22002e38711ebf961976</sys_id>
-        <sys_mod_count>11</sys_mod_count>
+        <sys_mod_count>23</sys_mod_count>
         <sys_name>Output</sys_name>
         <sys_package display_value="Meta" source="x_66238_meta">8f133b46db2222002e38711ebf96198a</sys_package>
         <sys_policy>read</sys_policy>
@@ -79,6 +132,6 @@ Output.prototype = {
         <sys_scope display_value="Meta">8f133b46db2222002e38711ebf96198a</sys_scope>
         <sys_update_name>sys_script_include_b9668e62db2a22002e38711ebf961976</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2016-10-21 21:34:18</sys_updated_on>
+        <sys_updated_on>2016-10-28 21:24:32</sys_updated_on>
     </sys_script_include>
 </record_update>
